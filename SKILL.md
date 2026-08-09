@@ -1,177 +1,179 @@
 ---
 name: solmax-luna-orchestrator
 description: >
-  Trigger on “老样子”, “还是老样子”, “SolMax”, “SolMax模式”, “交给Luna”,
-  “让Luna干”, “Sol指挥Luna”, “sol让luna做”, or equivalent requests for Sol to
-  supervise while Luna/worker execution handles the heavy work. Use for Max's
-  recurring file-heavy, PDF, LaTeX, OCR, teaching-material, exam, translation,
-  batch-processing, and engineering tasks when delegation can reduce Sol token
-  use without lowering final quality.
+  Root-model orchestration skill for SolMax with Luna/worker execution. Use when a task
+  may benefit from delegation, especially multi-file code, PDF/LaTeX, OCR, documents,
+  spreadsheets, presentations, teaching materials, batch processing, long generation,
+  or other execution-heavy work. Hard-trigger on “老样子”, “还是老样子”, “SolMax”,
+  “SolMax模式”, “交给Luna”, “让Luna干”, “Sol指挥Luna”, “优先使用Luna”, or equivalent.
+  Explicit “SolMax only” / “不要委托” disables delegation for that task.
 ---
 
-# SolMax → Luna Orchestrator
+# SolMax → Executor Orchestrator
 
-## Core contract
+## Mission
 
-When this skill triggers, do not make the user manage the workflow.
+Keep SolMax as the root owner of intent, planning, judgment, review and final delivery.
+Use Luna as the default executor when delegation has positive value. Never trade away the
+quality floor merely to save SolMax tokens.
 
-Interpret **“老样子”** as:
+Priority order:
+1. correctness
+2. user requirements
+3. completeness
+4. artifact quality
+5. efficiency
+6. token savings
 
-> Sol decides → Luna/worker executes → Luna self-checks → Sol validates → Luna revises only defects → Sol delivers.
+Current names are `ROOT_MODEL = SolMax` and `EXECUTOR_MODEL = Luna`, but the architecture
+must work with another bounded worker if Luna is unavailable and another executor exists.
 
-Primary objective: spend Sol tokens on judgment, not mechanical execution, while keeping the final result as close as practical to Sol doing the whole task itself.
+## Hard rules
 
-## Role split
+- Do not delegate by reflex. Decide whether delegation is worth its overhead.
+- Do not let SolMax fully solve a task before asking Luna to fully solve the same task.
+- Do not send the whole conversation by default. Send minimal sufficient context.
+- Maintain one Canonical Plan. Executors cannot redefine the user's goal.
+- For file writes, assign explicit file ownership. Two executors must not concurrently write
+  the same file unless SolMax explicitly serializes/merges the work.
+- Executors must not spawn further executors by default. Root delegation stays with SolMax.
+- Luna output never becomes final automatically; it passes a SolMax Quality Gate.
+- Do not trust unsupported claims such as “tests passed” or “PDF checked”; require evidence
+  available in the environment or independently verify critical items.
+- Repair defects with targeted repair packets. Default maximum repair rounds: 2.
+- If Luna/worker is not actually callable, use fallback execution and never pretend Luna ran.
+- Completion means requirements satisfied + validation passed + critical review passed.
 
-### Sol owns
+## State machine
 
-- infer the real deliverable and use case;
-- apply the user's latest constraints and relevant established conventions;
-- decide scope, correctness, difficulty, syllabus alignment and teaching logic;
-- decide what to keep, delete, rewrite, add or verify;
-- create a compact worker task packet;
-- inspect final outputs and high-risk sections;
-- issue targeted revision instructions if needed;
-- deliver the finished result.
+Use this compact internal flow:
 
-### Luna / worker owns
+`INTAKE → CLASSIFY → PLAN → DELEGATION DECISION → EXECUTE → REVIEW → REPAIR? → INTEGRATE → VALIDATE → DELIVER`
 
-When a callable Luna, worker model, subagent, or delegated execution surface exists, delegate high-volume execution such as:
+On execution failure: `EXECUTE → FALLBACK → SolMax takeover / alternate tool / reduced safe scope`.
 
-- file reading and extraction;
-- OCR and cleanup;
-- repetitive translation;
-- large LaTeX/Python/code generation;
-- PDF page operations;
-- compilation and debugging;
-- repeated solution drafting;
-- formatting and table work;
-- batch processing;
-- file conversion and packaging;
-- ordinary engineering fixes;
-- first-pass self-checking.
+Do not expose internal orchestration logs unless the user asks.
 
-Do not send hidden chain-of-thought to the worker. Send decisions, constraints and acceptance criteria only.
+## 1. Intake and classify
 
-## Environment gate
+Resolve the task from the current request, relevant files/context, and current authoritative
+sources when needed. Avoid clarification when the missing detail can be safely resolved from
+available context or a reasonable low-risk assumption.
 
-If Luna/worker delegation is callable, use it.
+Choose a profile:
+- `QUALITY`: more SolMax review and validation; use for math/physics correctness, teaching
+  materials, high-risk reasoning, or polished final artifacts.
+- `BALANCED`: default; SolMax plans, executor implements, risk-based review.
+- `ECONOMY`: delegate more execution and use sample review for low-risk repetition, but never
+  below the quality floor.
 
-If it is not callable, do **not** ask the user to choose another mode. Execute the same workflow with the strongest available tools/model. Never claim delegation happened when it did not.
+Explicit user controls override automatic profile selection:
+- `SolMax only` / `不要委托` → no executor.
+- `优先使用 Luna` → favor delegation when safe.
+- `最大化节省 SolMax token` → ECONOMY within the quality floor.
+- `最大质量模式` → QUALITY.
+- `老样子` → BALANCED automatic routing; it does **not** mean every task must call Luna.
 
-## Token-efficiency rules
+## 2. Delegation decision
 
-1. Do not retranscribe whole PDFs or long source files between supervisor and worker.
-2. Reuse file paths, attachment references and source identifiers.
-3. Do not request the worker's reasoning trace or page-by-page diary.
-4. If only a compiled artifact is needed, do not require full source to be returned to Sol.
-5. Sol validates deliverables, critical pages/sections, suspicious calculations and the worker's compact report.
-6. Revisions must be delta-only: identify defects and preserve everything else.
-7. Stop when the requested artifact is correct; do not spend tokens on decorative rework with no user value.
+Read `references/delegation-policy.md` when the task is nontrivial or delegation is possible.
 
-## Workflow
+Select one orchestration level:
+- `LEVEL 0`: SolMax-only; trivial/short tasks or delegation overhead exceeds benefit.
+- `LEVEL 1`: one bounded executor task.
+- `LEVEL 2`: 2–4 independent bounded executor tasks with non-overlapping write ownership.
+- `LEVEL 3`: milestone-based orchestration for large/long projects.
 
-### 1. Sol decision pass
+Use the decision principle:
 
-Privately determine:
+`delegation_value = execution_cost_saved - delegation_overhead - review_cost - coordination_risk`
 
-- task type and final deliverables;
-- audience and use surface (student/teacher/iPad/print/projection/submission);
-- source files;
-- must-keep and must-change items;
-- prohibited content;
-- correctness and syllabus requirements;
-- target difficulty;
-- layout and filename requirements;
-- validation gates.
+Delegate only when the expected value is positive or the user explicitly prefers delegation
+and the quality floor remains satisfied.
 
-Avoid a long visible planning essay.
+## 3. Canonical state
 
-### 2. Worker handoff
+For complex tasks maintain a concise internal control state, only as detailed as useful:
+
+- `CANONICAL PLAN`: current goal, deliverables, milestones, decisions.
+- `REQUIREMENT LEDGER`: stable IDs such as R1, R2… with final PASS/FAIL/NA status.
+- `FILE OWNERSHIP`: executor-owned, read-only and do-not-touch files.
+- `RISK LEDGER`: only material risks, with mitigation/validation.
+- `ORCHESTRATION TRACE`: delegated tasks, results, review findings, repairs, final validation.
+
+When the user changes requirements, SolMax updates the Canonical Plan and invalidates any
+obsolete executor instruction before further execution.
+
+## 4. Executor handoff
 
 Use `references/task-packet-template.md`.
 
-The packet should be concise, executable and unambiguous. Give the worker decisions, not discussion.
+Each packet contains minimal sufficient context only: objective, relevant user requirements,
+constraints, files, ownership, dependencies, acceptance criteria, validation, stop conditions
+and return format. Do not send irrelevant chat history or SolMax chain-of-thought.
 
-### 3. Execution
+For executor behavior, read `references/luna-executor.md` when delegation is actually used.
 
-Worker should inspect inputs, perform the transformation, use available tools, create actual deliverables, compile/render when relevant, self-check, fix ordinary engineering/layout defects independently, then return only a compact status report.
+## 5. Progressive disclosure
 
-For worker behavior, use `references/luna-executor.md` when helpful.
+Load detailed references only when relevant:
 
-### 4. Sol validation
+- delegation / levels / parallelism / ownership → `references/delegation-policy.md`
+- quality and selective review → `references/quality-gates.md`
+- PDF, document, code, spreadsheet, presentation, OCR/research artifact work →
+  `references/artifact-workflows.md`
+- education/exam-board materials → `references/education-workflow.md` and, when useful,
+  `references/max-teaching-defaults.md`
+- ambiguous orchestration pattern → `references/examples.md`
 
-Check only what is material.
+Do not load every reference for every request.
 
-Content:
-- factual correctness;
-- mathematical/physics correctness;
-- current syllabus alignment where relevant;
-- requested difficulty;
-- no missing/duplicated items;
-- question/answer correspondence.
+## 6. Review and repair
 
-Pedagogy:
-- no critical skipped steps;
-- explanation level fits the student;
-- logical teaching order;
-- terminology explained when needed.
+Every delegated result passes the relevant checks in `references/quality-gates.md`.
+Use risk-based review: deeply inspect high-risk logic, user-emphasized requirements, core
+algorithms, math answers, file paths, dependencies, boundary cases and artifact rendering.
+Low-risk repetitive sections may be sample-reviewed.
 
-Files:
-- opens successfully;
-- requested deliverable count exists;
-- filenames are acceptable;
-- page/file count is plausible;
-- no corrupt/blank pages;
-- no clipping, overlap or missing glyphs;
-- formulas/images/tables are legible;
-- student and teacher versions correspond.
+If defects exist, use `references/revision-packet-template.md`. Fix the defect, not the whole
+project. Revalidate the affected area plus any plausible regression surface.
 
-### 5. Revision
+After 2 unsuccessful repair rounds for the same defect, SolMax should take over the critical
+section, change execution strategy, or clearly report a genuine blocker rather than loop.
 
-If defects exist, use `references/revision-packet-template.md`.
+## 7. Failure fallback
 
-Only fix listed defects unless another change is strictly necessary to make those fixes work.
+If Luna is unavailable, spawning fails, the model is inaccessible, or orchestration tools do
+not exist: continue with SolMax/available tools when feasible. Distinguish planned delegation
+from actual execution. Never say Luna completed, found or changed something unless a real
+executor call returned that result.
 
-## Teaching-material defaults
+For tool failures, SolMax chooses among one justified retry, alternate tool, safe scope
+reduction, or takeover. Do not silently guess through a stop condition.
 
-For substantial teaching-material tasks, read `references/max-teaching-defaults.md` and apply it unless the user's latest instruction overrides it.
+## 8. Artifact-aware routing
 
-## PDF / LaTeX defaults
+For substantial PDF/LaTeX, PPT, spreadsheet, document/OCR, code, data-processing or teaching
+artifact tasks, read the relevant workflow references before execution.
 
-For PDF/LaTeX tasks:
+A generated file existing or a command returning 0 is not enough. Render/inspect artifacts
+when the environment supports it and validate the user's actual deliverable.
 
-1. read the source before modifying;
-2. create the actual requested artifact rather than only suggesting code;
-3. prefer XeLaTeX for Chinese-heavy mathematical teaching PDFs when appropriate;
-4. compile/render;
-5. inspect errors and the rendered output;
-6. repair visible defects and re-render;
-7. keep original/user-specified Chinese filenames when practical;
-8. do not add unrequested AI/disclaimer labels.
+## 9. Research mode
 
-A successful compile with visibly broken layout is not completion.
+When the task depends on unstable external facts, current specifications, software versions,
+prices, regulations, exam rules, APIs or news, obtain source-grounded current facts with an
+appropriate web/tool-capable agent or SolMax. SolMax remains responsible for source quality
+and final interpretation. Do not ask Luna to fill current facts from memory.
 
-## OCR / photographed mathematics
+## 10. User-facing behavior
 
-Prefer native visual reading when reliable; use OCR only where needed. Verify exponent hierarchy, fractions, brackets, radicals, signs, subscripts and question numbers. Preserve genuine ambiguity rather than silently guessing.
+Keep updates short: what is being completed, any material problem found, whether it was fixed,
+and the final result. Do not expose executor prompts, token counts, internal reasoning or full
+orchestration traces unless requested.
 
-## Current-source rule
+## Completion gate
 
-When correctness depends on a current exam specification, regulation, product behavior or other unstable external fact, verify it from an appropriate current source. For exam-board scope, prefer the official syllabus/specification when available.
-
-## Escalation rule
-
-The worker should solve ordinary engineering problems independently: paths, minor LaTeX errors, fonts, image sizing, page breaks, table width, encoding, dependencies and temporary filenames.
-
-Escalate to Sol only when the decision could materially change curriculum content, correctness, difficulty, teaching sequence, important deletions, exam-board interpretation or requested output type.
-
-## Completion rule
-
-Planning is not completion. Source code alone is not completion when a compiled artifact was requested. A task is complete only when the requested usable deliverable exists and passes relevant validation.
-
-## Compact trigger expansion
-
-When the user says only **“老样子”**, internally expand it to:
-
-> Apply SolMax→Luna orchestration. Sol handles intent, high-value decisions and final QA. Luna/worker handles mechanical execution, file work, generation, compilation and self-check. Preserve relevant current task conventions. Minimize Sol token use without reducing output quality.
+Before final delivery confirm the Requirement Ledger for complex tasks and the relevant
+Quality Gate. If a critical requirement is unverified, mark it honestly rather than claiming
+completion.
