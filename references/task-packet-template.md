@@ -10,7 +10,9 @@ TASK_ID
 <T1 / M2-T1 / other stable id>
 
 RESOLVED EXECUTION
-<actual model ID if exposed, or runtime default; supported reasoning; required tools>
+<actual chosen worker model ID if exposed, otherwise runtime default / identity unknown>
+<actual supported effort, otherwise runtime/model default or unknown; required tools>
+<concise reason for model/effort fit; acceptance check and escalation condition>
 <availability evidence and any material fallback; omit irrelevant details>
 
 OBJECTIVE
@@ -78,6 +80,10 @@ FOLLOW_UP_NEEDED:
 - Minimal sufficient context only.
 - Set a model override only with an exact ID accepted by the current runtime. Never use
   role labels or copy a model ID from an old packet without checking availability.
+- Root autonomously chooses each worker's model and supported effort from runtime evidence
+  and task needs; do not ask the user to micromanage. A main-model choice is not a worker pin.
+- If the runtime offers no override, use a suitable documented/runtime default and record
+  that accurately. Do not claim a model or effort that the runtime does not expose.
 - Do not include SolMax chain-of-thought.
 - Do not include irrelevant conversation history.
 - Do not ask the executor to re-decide the overall architecture unless that bounded decision is explicitly delegated.

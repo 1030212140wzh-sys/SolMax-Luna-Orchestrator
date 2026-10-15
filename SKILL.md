@@ -1,7 +1,8 @@
 ---
 name: solmax-luna-orchestrator
 description: >
-  Version-independent root/worker orchestration with live model resolution. Preserve
+  Version-independent root/worker orchestration with autonomous model/effort selection.
+  Use for requests such as “智能分派” or “主模型自主分派”. Preserve
   SolMax and Luna as familiar role names, not fixed GPT versions. Use when a task
   may benefit from delegation, especially multi-file code, PDF/LaTeX, OCR, documents,
   spreadsheets, presentations, teaching materials, batch processing, long generation,
@@ -14,9 +15,9 @@ description: >
 
 ## Mission
 
-Keep SolMax as the root owner of intent, planning, judgment, review and final delivery.
-Use Luna as the default executor when delegation has positive value. Never trade away the
-quality floor merely to save SolMax tokens.
+Keep the active capable root as the owner of intent, planning, judgment, review and final
+delivery. Use Luna or another suitable efficient worker when delegation has positive value.
+Never trade away the quality floor merely to save root tokens.
 
 Priority order:
 1. correctness
@@ -26,19 +27,27 @@ Priority order:
 5. efficiency
 6. token savings
 
-Treat `SolMax` / `Sol` as the supervisor role and `Luna` as the efficient executor role
-throughout this skill and its references. These labels are not literal model IDs or an
-instruction to force maximum reasoning. Resolve actual models from current runtime
-capabilities using `references/model-selection.md` before the first handoff of a task.
+Treat `SolMax` / `Sol` as the current root session (whatever capable model the user chose,
+including Astra or future families) and `Luna` as the efficient-worker role throughout this
+skill and its references. These labels are not literal model IDs or an instruction to force
+maximum reasoning. A powerful root increases the opportunity to offload bounded, low-complexity
+execution; it does not disable delegation or authorize switching the active root to Sol. A
+user's main-model choice does not pin workers to that model. Only an explicit worker-specific
+pin constrains that worker role; `不要委托` still disables delegation. Resolve each worker's
+actual model and supported effort from runtime capabilities using
+`references/model-selection.md` before handoff.
 Keep the package name and existing trigger phrases for backward compatibility.
 
 ## Version-independent model selection
 
-- Honor an explicitly selected model and higher-priority runtime instructions.
+- Honor explicit model/effort choices for the role they apply to and higher-priority
+  runtime instructions; selecting a main model alone does not pin every worker.
 - Keep the current root session unless a supported model-selection control can actually
   change it. A skill cannot switch the model behind an already-running conversation.
-- For automatic choices, use the newest verified, available, compatible model for each
-  role; check the live tool/model inventory before using any exact ID.
+- Let the active root independently choose each worker's model and supported effort
+  based on task difficulty, risk, available capabilities and total cost/time. Check the
+  live inventory before using an exact ID; prefer verified suitable successors when
+  quality and cost fit. Do not ask the user to micromanage routine dispatch.
 - Preserve the supervisor/executor split. Do not choose one flagship for every role or
   assume that supervisor and executor version numbers advance together.
 - Never invent a future model ID, infer capabilities from its number, or hardcode a
@@ -84,7 +93,7 @@ available context or a reasonable low-risk assumption.
 Choose a profile:
 - `QUALITY`: more SolMax review and validation; use for math/physics correctness, teaching
   materials, high-risk reasoning, or polished final artifacts.
-- `BALANCED`: default; SolMax plans, executor implements, risk-based review.
+- `BALANCED`: default; root plans, suitable worker implements when worthwhile, risk-based review.
 - `ECONOMY`: delegate more execution and use sample review for low-risk repetition, but never
   below the quality floor.
 
@@ -100,7 +109,7 @@ Explicit user controls override automatic profile selection:
 Read `references/delegation-policy.md` when the task is nontrivial or delegation is possible.
 
 Select one orchestration level:
-- `LEVEL 0`: SolMax-only; trivial/short tasks or delegation overhead exceeds benefit.
+- `LEVEL 0`: root-only; tiny/short tasks or delegation overhead exceeds benefit.
 - `LEVEL 1`: one bounded executor task.
 - `LEVEL 2`: 2–4 independent bounded executor tasks with non-overlapping write ownership.
 - `LEVEL 3`: milestone-based orchestration for large/long projects.
@@ -109,8 +118,11 @@ Use the decision principle:
 
 `delegation_value = execution_cost_saved - delegation_overhead - review_cost - coordination_risk`
 
-Delegate only when the expected value is positive or the user explicitly prefers delegation
-and the quality floor remains satisfied.
+Proactively delegate worthwhile repetitive extraction, formatting, conversions, and bounded
+implementation with clear acceptance criteria to a suitable efficient worker, even when the
+root is Astra or another advanced model. Tiny tasks whose handoff costs more than direct work
+stay at LEVEL 0. Delegate only when total expected value is positive or the user explicitly
+prefers delegation and the quality floor remains satisfied.
 
 ## 3. Canonical state
 
@@ -122,7 +134,7 @@ For complex tasks maintain a concise internal control state, only as detailed as
 - `RISK LEDGER`: only material risks, with mitigation/validation.
 - `ORCHESTRATION TRACE`: delegated tasks, results, review findings, repairs, final validation.
 
-When the user changes requirements, SolMax updates the Canonical Plan and invalidates any
+When the user changes requirements, the root updates the Canonical Plan and invalidates any
 obsolete executor instruction before further execution.
 
 ## 4. Executor handoff
@@ -166,10 +178,10 @@ section, change execution strategy, or clearly report a genuine blocker rather t
 
 ## 7. Failure fallback
 
-If Luna is unavailable, spawning fails, the model is inaccessible, or orchestration tools do
-not exist: continue with SolMax/available tools when feasible. Distinguish planned delegation
-from actual execution. Never say Luna completed, found or changed something unless a real
-executor call returned that result.
+If Luna/worker is unavailable, spawning fails, the model is inaccessible, or orchestration
+tools do not exist: continue with the active root/available tools when feasible. Distinguish
+planned delegation from actual execution. Never say Luna completed, found or changed
+something unless a real executor call returned that result.
 
 For tool failures, SolMax chooses among one justified retry, alternate tool, safe scope
 reduction, or takeover. Do not silently guess through a stop condition.

@@ -16,11 +16,15 @@ Read its current default branch and applicable repository instructions before ed
 3. If the current version-independent rules already handle the new model, make no
    cosmetic commit. Report that compatibility was checked and no change was needed.
 4. For a real defect, make a small targeted update. Preserve trigger phrases, the
-   supervisor/executor roles, delegation levels, quality gates and teaching preferences.
+   model-agnostic root/worker roles, delegation levels, autonomous per-task worker
+   model/effort selection, proactive bounded offloading, quality gates and teaching
+   preferences. An advanced root should not disable delegation or be silently replaced by
+   Sol. A main-model choice is not a worker pin; preserve role-specific pins and `不要委托`.
    Do not change permissions, subscriptions, credentials or unrelated user settings.
 5. Validate syntax/references and affected routing scenarios. Check successor handling,
-   missing access, explicit pins, no worker/default inventory, role-specific versions,
-   unsupported reasoning and root-session limitations. Keep scenario expectations
+   missing access, root-only vs worker-specific pins, no worker/default inventory,
+   role-specific versions, unsupported effort, hidden cost/availability, root-session
+   limitations and proactive delegation from an advanced root. Keep scenario expectations
    separate from actual test results; never mark a test passed merely by writing it.
 6. Save through the supported Git/skill persistence mechanism. Stage only task-owned
    changes. Use normal commits/pushes; do not force-push or overwrite concurrent edits.

@@ -1,23 +1,23 @@
 # SolMax-Luna-Orchestrator
 
-A personal orchestration Skill that keeps **SolMax as the root brain/reviewer/final owner** and uses **Luna (or another bounded executor) for execution-heavy work** when delegation is actually worthwhile.
+A personal orchestration Skill that keeps the **active root model as planner/reviewer/final owner** and uses **Luna (or another suitable efficient worker)** for bounded execution when delegation is worthwhile.
 
 ## Version-independent model routing
 
-SolMax and Luna are role names, not fixed model IDs. The Skill checks the live runtime
-before selecting a worker and uses the newest verified compatible model for each role.
-Future releases and renamed model families follow the same capability-based rules;
-supervisor and executor version numbers do not need to match.
+SolMax/Sol and Luna are role names, not fixed model IDs: SolMax/Sol means the current root
+session, including Astra or a future family; Luna means the efficient-worker role. The Skill
+checks runtime evidence before selecting a worker. A powerful root should look more actively
+for bounded, repetitive work worth offloading. Choosing Astra as the main model does not pin
+workers to Astra; only a worker-specific pin constrains that role. Future releases and renamed
+families follow capability-based rules; root and worker versions need not match.
 
 - Preserve explicit user model choices and the current root session.
-- Prefer a current capable supervisor and an efficient compatible executor.
-- Verify exact IDs, tools and reasoning settings before model-specific calls.
+- Root autonomously selects each suitable worker model and supported effort using task risk,
+  ambiguity, volume, context/tool needs, and total cost/time including review and retries.
+- Verify exact IDs, tools and supported effort before model-specific calls; never assume
+  pricing or effort support.
 - Handle unavailable models with a verified alternative or root takeover.
 - Never claim that editing this Skill switches an already-running conversation's model.
-
-As checked on 2026-10-15, the [official model guidance](https://learn.chatgpt.com/docs/models)
-recommends GPT-6.1 Sol for complex work and GPT-6 Luna for focused repeatable tasks when
-available. This is a dated example, not a hardcoded routing table.
 
 See `references/model-selection.md` for the selection policy and
 `references/model-maintenance.md` for the authorized maintenance procedure. A recurring
@@ -26,7 +26,7 @@ Do not confuse a source update with a verified update of every installed/cached 
 
 ## What changed in v2
 
-The Skill no longer treats every trigger as “always call Luna.” It now includes:
+The Skill does not treat every trigger as “always call Luna.” It now includes:
 
 - delegation decision engine (`LEVEL 0–3`);
 - QUALITY / BALANCED / ECONOMY profiles;
@@ -55,7 +55,7 @@ Examples:
 
 `老样子` now means **BALANCED automatic routing**:
 
-> SolMax decides whether delegation is useful → executor performs bounded heavy work when appropriate → SolMax validates → targeted repair if needed → final delivery.
+> Active root decides whether delegation is useful → suitable worker performs bounded work when appropriate → root validates → targeted repair if needed → final delivery.
 
 A trivial task can still remain SolMax-only.
 

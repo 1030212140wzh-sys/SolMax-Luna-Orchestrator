@@ -56,6 +56,13 @@ Future version labels below are hypothetical test inputs only.
 | 31 | Repository push succeeds but installed skill cannot be refreshed | Distinguish source updated from installed copy unverified |
 | 32 | A worker rejects the previously verified model | Recheck once, use a verified fallback or root takeover; no guessed-ID retry loop |
 | 33 | Runtime offers models but cannot identify which is newest | Use the supported role-appropriate recommendation/known working choice; do not sort strings or assert unknown recency |
+| 34 | Astra is the selected root; 80-page repetitive extraction has clear acceptance criteria and an efficient compatible worker is available | Keep Astra as root; proactively delegate bounded extraction to a suitable efficient worker; root validates; do not treat the root choice as a worker pin |
+| 35 | User pins Astra as the main/root model only | Keep Astra as the active root; autonomously choose each worker model/effort from runtime evidence and task needs |
+| 36 | User pins a specific worker model | Honor that worker-role pin if available; explain before substituting if unavailable; a root selection alone does not act as this pin |
+| 37 | Two independent bounded subtasks have different risk and complexity | Choose model and supported effort independently per subtask; a simple conversion may use efficient default while an error-sensitive implementation gets stronger capability/effort or root takeover |
+| 38 | Tiny, unambiguous wording edit | Root does it directly when handoff/review overhead exceeds value |
+| 39 | Runtime exposes a worker interface but no model or effort override | Use a suitable runtime default only if supported and capable; record actual identity/effort as unknown/default and never claim an override |
+| 40 | Effort labels differ by model and pricing is not exposed | Use documented model-specific effort/default guidance; do not compare labels across models or invent prices; reason qualitatively about total cost/time and validation |
 
 ### Validation recorded on 2026-10-15
 
@@ -69,3 +76,15 @@ Future version labels below are hypothetical test inputs only.
 - This verifies instruction-following on hypothetical situations. It does not establish
   access to future models, switch a live root session, refresh an installed copy, or prove
   that a future scheduled maintenance run succeeded.
+
+### Autonomous dispatch validation on 2026-10-15
+
+- A fresh agent read only the skill/references and answered six hypothetical requests:
+  Astra-root batch conversion, two tasks with different difficulty, explicit no-delegation,
+  a one-word edit, a default-only worker interface, and an explicitly pinned worker.
+- All six responses matched the intended role, effort, override and validation behavior
+  on root review. No scenario work or simulated worker calls were represented as real.
+- The rule-editing work itself used a real `gpt-6-luna` worker at supported `high` effort;
+  root reviewed its diff and refined the top-level policy before persistence.
+- Skill validation and `git diff --check` passed after the policy changes. This checks
+  instruction-following, not benchmarked prices, future model access or installed-copy sync.

@@ -4,7 +4,9 @@ Load this reference only when delegation is plausible or the task is nontrivial.
 
 ## Decision objective
 
-Delegate only when it reduces total high-value SolMax work without pushing final quality below the quality floor.
+Delegate when it reduces total high-value root work without pushing final quality below the
+quality floor. A capable or advanced root should actively look for worthwhile bounded work
+to offload; root capability does not itself make delegation wasteful.
 
 Conceptually evaluate:
 
@@ -14,7 +16,7 @@ This is a decision heuristic, not a requirement to calculate numeric scores.
 
 ## Task classes
 
-### A. SolMax-only
+### A. Root-only
 
 Usually keep at `LEVEL 0`:
 
@@ -26,7 +28,7 @@ Usually keep at `LEVEL 0`:
 - task where constructing/reviewing a packet costs more than doing the work;
 - a critical reasoning step that would need SolMax to redo the whole thing to trust it.
 
-### B. SolMax + executor
+### B. Root + worker
 
 Prefer delegation when execution volume is material:
 
@@ -42,10 +44,12 @@ Prefer delegation when execution volume is material:
 - large test suites or repeated validation;
 - repetitive data organization;
 - execution-heavy tasks that would consume many SolMax tokens.
+- repetitive extraction, formatting, conversions, and bounded coding implementation when
+  there is enough volume to outweigh handoff and review.
 
-### C. SolMax-heavy with bounded execution
+### C. Root-heavy with bounded execution
 
-Delegation can help, but SolMax must retain more reasoning/review:
+Delegation can help, but root retains critical reasoning and review:
 
 - architecture design;
 - ambiguous requirements;
@@ -55,7 +59,9 @@ Delegation can help, but SolMax must retain more reasoning/review:
 - core sections the user explicitly says must be extremely accurate;
 - tasks where a small conceptual error contaminates the whole artifact.
 
-Delegate implementation/formatting/verification work, not ownership of the critical judgment.
+Delegate implementation/formatting/verification work, not ownership of critical judgment.
+A bounded difficult subtask may go to a stronger suitable worker; the root selects its model
+and supported effort per task. Do not inherit the root's model or effort automatically.
 
 ## Orchestration levels
 
@@ -148,6 +154,11 @@ Rules:
 - if downstream work depends on upstream output, serialize it;
 - do not parallelize shared mutable state merely to increase worker count;
 - when a merge step is required, SolMax owns the integration decision.
+- Root chooses worker model and supported effort for each packet, without asking the user to
+  micromanage. Consider runtime evidence, correctness risk, volume, ambiguity, context and
+  tool/modality needs, plus handoff, review, retry, cost and time. Record actual choice or
+  unknown runtime default, a concise reason, acceptance check and escalation condition in the
+  internal packet/trace. Keep this compact and internal by default.
 
 ## Parallelism policy
 
