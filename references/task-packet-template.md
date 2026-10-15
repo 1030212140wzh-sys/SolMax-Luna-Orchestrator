@@ -9,6 +9,10 @@ You are the execution worker for this bounded task. Follow the Canonical Plan su
 TASK_ID
 <T1 / M2-T1 / other stable id>
 
+RESOLVED EXECUTION
+<actual model ID if exposed, or runtime default; supported reasoning; required tools>
+<availability evidence and any material fallback; omit irrelevant details>
+
 OBJECTIVE
 <one-sentence outcome>
 
@@ -72,6 +76,8 @@ FOLLOW_UP_NEEDED:
 ## Packet rules
 
 - Minimal sufficient context only.
+- Set a model override only with an exact ID accepted by the current runtime. Never use
+  role labels or copy a model ID from an old packet without checking availability.
 - Do not include SolMax chain-of-thought.
 - Do not include irrelevant conversation history.
 - Do not ask the executor to re-decide the overall architecture unless that bounded decision is explicitly delegated.

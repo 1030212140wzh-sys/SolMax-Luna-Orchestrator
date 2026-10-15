@@ -35,3 +35,37 @@ A scenario passes when the current Skill rules route it to the expected orchestr
 ## Static test limitations
 
 These tests validate the written routing contract, not the behavior of a specific future Codex/Luna runtime. Runtime integration must still obey actual tool/model availability. The Skill explicitly forbids representing planned delegation as actual execution.
+
+## Version-independent routing acceptance cases
+
+These are expected behaviors, not claims that future models or scheduled runs were executed.
+Future version labels below are hypothetical test inputs only.
+
+| # | Scenario | Expected behavior |
+|---|---|---|
+| 21 | Runtime exposes a verified newer Sol successor and a Luna with a different version | Select by role; do not require matching version numbers; preserve the active root unless a real control can change it |
+| 22 | News announces GPT-6.5 but it is absent from the callable inventory | Do not invent or call its ID; retain a compatible available choice |
+| 23 | User explicitly pins an available older model | Honor the pin; no silent latest-model replacement |
+| 24 | User pins a model that is not callable | Explain before replacing that pinned role; continue independent work |
+| 25 | No model list and no worker interface | Root performs the task; no invented delegation |
+| 26 | Worker tools expose a default but hide the exact model identity | Use it only if suitable; record default with identity unexposed |
+| 27 | New model lacks requested vision/tool support | Keep a compatible model or root takeover; a newer name is insufficient |
+| 28 | `SolMax` trigger with a model lacking `max` reasoning | Use supported settings; the label does not force `max` |
+| 29 | Model family is renamed and runtime metadata identifies a compatible efficient successor | Resolve from role/capability evidence; do not depend on a `luna` name match |
+| 30 | Weekly review finds no relevant defect | Report checked/no change; no fabricated update or cosmetic commit |
+| 31 | Repository push succeeds but installed skill cannot be refreshed | Distinguish source updated from installed copy unverified |
+| 32 | A worker rejects the previously verified model | Recheck once, use a verified fallback or root takeover; no guessed-ID retry loop |
+| 33 | Runtime offers models but cannot identify which is newest | Use the supported role-appropriate recommendation/known working choice; do not sort strings or assert unknown recency |
+
+### Validation recorded on 2026-10-15
+
+- Skill frontmatter/name validation: passed using `quick_validate.py`.
+- Referenced file paths: 15 checked, all present; `git diff --check` passed.
+- An isolated agent read the skill and relevant references, without this test file, and
+  answered seven supplied routing situations: separate root/worker successors, announced
+  but unavailable model, unavailable explicit pin, identity-hidden default, unsupported
+  maximum reasoning, no-change maintenance, and source-only update. All seven responses
+  matched the acceptance behavior on review.
+- This verifies instruction-following on hypothetical situations. It does not establish
+  access to future models, switch a live root session, refresh an installed copy, or prove
+  that a future scheduled maintenance run succeeded.

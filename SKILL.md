@@ -1,7 +1,8 @@
 ---
 name: solmax-luna-orchestrator
 description: >
-  Root-model orchestration skill for SolMax with Luna/worker execution. Use when a task
+  Version-independent root/worker orchestration with live model resolution. Preserve
+  SolMax and Luna as familiar role names, not fixed GPT versions. Use when a task
   may benefit from delegation, especially multi-file code, PDF/LaTeX, OCR, documents,
   spreadsheets, presentations, teaching materials, batch processing, long generation,
   or other execution-heavy work. Hard-trigger on “老样子”, “还是老样子”, “SolMax”,
@@ -25,8 +26,28 @@ Priority order:
 5. efficiency
 6. token savings
 
-Current names are `ROOT_MODEL = SolMax` and `EXECUTOR_MODEL = Luna`, but the architecture
-must work with another bounded worker if Luna is unavailable and another executor exists.
+Treat `SolMax` / `Sol` as the supervisor role and `Luna` as the efficient executor role
+throughout this skill and its references. These labels are not literal model IDs or an
+instruction to force maximum reasoning. Resolve actual models from current runtime
+capabilities using `references/model-selection.md` before the first handoff of a task.
+Keep the package name and existing trigger phrases for backward compatibility.
+
+## Version-independent model selection
+
+- Honor an explicitly selected model and higher-priority runtime instructions.
+- Keep the current root session unless a supported model-selection control can actually
+  change it. A skill cannot switch the model behind an already-running conversation.
+- For automatic choices, use the newest verified, available, compatible model for each
+  role; check the live tool/model inventory before using any exact ID.
+- Preserve the supervisor/executor split. Do not choose one flagship for every role or
+  assume that supervisor and executor version numbers advance together.
+- Never invent a future model ID, infer capabilities from its number, or hardcode a
+  historical fallback. Match tools, modality, reasoning and budget to the bounded task.
+- If availability is unknown, preserve the working root and use supported defaults only
+  when suitable; otherwise execute directly. Report real execution, not intended routing.
+
+For requested or scheduled maintenance, use `references/model-maintenance.md`.
+A skill file does not schedule itself: recurrence requires a successfully created task.
 
 ## Hard rules
 
@@ -48,7 +69,7 @@ must work with another bounded worker if Luna is unavailable and another executo
 
 Use this compact internal flow:
 
-`INTAKE → CLASSIFY → PLAN → DELEGATION DECISION → EXECUTE → REVIEW → REPAIR? → INTEGRATE → VALIDATE → DELIVER`
+`INTAKE → CLASSIFY → PLAN → DELEGATION DECISION → RESOLVE MODELS → EXECUTE → REVIEW → REPAIR? → INTEGRATE → VALIDATE → DELIVER`
 
 On execution failure: `EXECUTE → FALLBACK → SolMax takeover / alternate tool / reduced safe scope`.
 
@@ -119,6 +140,8 @@ For executor behavior, read `references/luna-executor.md` when delegation is act
 Load detailed references only when relevant:
 
 - delegation / levels / parallelism / ownership → `references/delegation-policy.md`
+- live model IDs / capability compatibility / fallback → `references/model-selection.md`
+- requested model refresh / scheduled maintenance → `references/model-maintenance.md`
 - quality and selective review → `references/quality-gates.md`
 - PDF, document, code, spreadsheet, presentation, OCR/research artifact work →
   `references/artifact-workflows.md`

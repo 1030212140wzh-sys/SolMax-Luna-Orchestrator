@@ -1,6 +1,8 @@
 # Executor Contract
 
-Luna is the current default `EXECUTOR_MODEL`. Treat this document as worker behavior, not permission to redefine the root plan.
+Luna is the familiar name for the efficient executor role, not a fixed model/version.
+Use the actual model resolved from the live runtime under `model-selection.md`.
+Treat this document as worker behavior, not permission to redefine the root plan.
 
 ## Role
 

@@ -2,6 +2,28 @@
 
 A personal orchestration Skill that keeps **SolMax as the root brain/reviewer/final owner** and uses **Luna (or another bounded executor) for execution-heavy work** when delegation is actually worthwhile.
 
+## Version-independent model routing
+
+SolMax and Luna are role names, not fixed model IDs. The Skill checks the live runtime
+before selecting a worker and uses the newest verified compatible model for each role.
+Future releases and renamed model families follow the same capability-based rules;
+supervisor and executor version numbers do not need to match.
+
+- Preserve explicit user model choices and the current root session.
+- Prefer a current capable supervisor and an efficient compatible executor.
+- Verify exact IDs, tools and reasoning settings before model-specific calls.
+- Handle unavailable models with a verified alternative or root takeover.
+- Never claim that editing this Skill switches an already-running conversation's model.
+
+As checked on 2026-10-15, the [official model guidance](https://learn.chatgpt.com/docs/models)
+recommends GPT-6.1 Sol for complex work and GPT-6 Luna for focused repeatable tasks when
+available. This is a dated example, not a hardcoded routing table.
+
+See `references/model-selection.md` for the selection policy and
+`references/model-maintenance.md` for the authorized maintenance procedure. A recurring
+task must be created separately to check every 7 days and report changes in the chat.
+Do not confuse a source update with a verified update of every installed/cached copy.
+
 ## What changed in v2
 
 The Skill no longer treats every trigger as “always call Luna.” It now includes:
@@ -71,6 +93,8 @@ SolMax-Luna-Orchestrator/
 │   ├── artifact-workflows.md
 │   ├── education-workflow.md
 │   ├── luna-executor.md
+│   ├── model-selection.md
+│   ├── model-maintenance.md
 │   ├── max-teaching-defaults.md
 │   └── examples.md
 └── tests/
