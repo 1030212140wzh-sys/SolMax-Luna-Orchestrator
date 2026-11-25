@@ -33,6 +33,8 @@ Read this as the authority for model selection across all older SolMax/Luna refe
    are model-specific and not comparable across models. Use actual model-specific guidance
    and validation. If an override is unavailable, use a suitable default and record that
    honestly; never claim to switch the active root's effort.
+5a. Some clients expose modes such as Max or Ultra (or future equivalents) in addition to ordinary per-model effort settings. Interpret them by their documented semantics, not as interchangeable effort labels: a Max-like mode may allocate more reasoning time to one task, while an Ultra-like mode may invoke subagents for parallel work. Verify support in both the current client and selected model before choosing either. Use a Max-like mode only when the task's difficulty justifies the extra time/usage. Use an Ultra-like mode only when the work has meaningful independent parts and parallel execution beats coordination, review and retry overhead. Do not stack client-managed subagents with manually spawned executors by default; combine layers only when their scopes are distinct, non-overlapping and demonstrably worthwhile. If a mode is unsupported, use a supported setting/default or keep execution with the active root; never claim an unavailable override.
+
 6. Confirm successor status through runtime metadata or current official documentation.
    Do not sort arbitrary model-name strings or assume all new models are successors.
    If the evidence cannot rank candidates, use the documented runtime recommendation
