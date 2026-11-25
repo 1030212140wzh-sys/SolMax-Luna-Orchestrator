@@ -64,6 +64,10 @@ Future version labels below are hypothetical test inputs only.
 | 39 | Runtime exposes a worker interface but no model or effort override | Use a suitable runtime default only if supported and capable; record actual identity/effort as unknown/default and never claim an override |
 | 40 | Effort labels differ by model and pricing is not exposed | Use documented model-specific effort/default guidance; do not compare labels across models or invent prices; reason qualitatively about total cost/time and validation |
 
+| 41 | A genuinely difficult single task is offered a Max-like mode | Use only if the current model/client supports it; reserve the extra reasoning time for work where depth justifies the cost | 
+| 42 | A complex task has several meaningful independent parts and an Ultra-like mode is available | Use only if supported and parallelism beats coordination/review overhead; do not duplicate manual executor delegation by default |
+| 43 | The selected model/client does not support the requested Max/Ultra-like mode | Do not force or claim the override; choose a supported setting/default or keep the work with the active root |
+
 ### Validation recorded on 2026-10-15
 
 - Skill frontmatter/name validation: passed using `quick_validate.py`.
